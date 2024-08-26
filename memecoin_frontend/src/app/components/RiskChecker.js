@@ -25,6 +25,7 @@ const RiskChecker = () => {
     }
 
     const transactions = await fetchContractHistory(address);
+    console.log(transactions)
     const score = calculateRiskScore(transactions);
     setRiskScore(score);
     setIsLoading(false);

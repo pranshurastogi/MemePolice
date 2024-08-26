@@ -8,6 +8,7 @@ const alchemyProvider = new ethers.JsonRpcProvider(
 export const fetchContractCode = async (address) => {
   try {
     const code = await alchemyProvider.getCode(address);
+    console.log("Fetched code", code)
     return code;
   } catch (error) {
     console.error("Error fetching contract code:", error);
@@ -18,8 +19,9 @@ export const fetchContractCode = async (address) => {
 export const fetchContractHistory = async (address) => {
   try {
     const response = await axios.get(
-      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`
+      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`
     );
+    console.log("RESPONS /n",response.data.result, response)
     return response.data.result;
   } catch (error) {
     console.error("Error fetching contract history:", error);
