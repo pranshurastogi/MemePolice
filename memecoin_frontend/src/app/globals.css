@@ -10,7 +10,7 @@ body {
 }
 
 input {
-  @apply bg-gray-800 text-white border-gray-600 rounded;
+  @apply bg-gray-800 text-white border-gray-600 rounded focus:outline-none focus:border-blue-500;
 }
 
 button {
@@ -27,4 +27,30 @@ p {
 
 .container {
   @apply flex flex-col items-center justify-center min-h-screen py-2;
+}
+
+.custom-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.custom-flex-1 {
+  flex-grow: 1;
+}
+
+/* Manually define styles for bg-gray-800 without using @apply */
+.custom-bg-gray {
+  background-color: #2d3748; /* This is equivalent to bg-gray-800 */
+  padding: 1.5rem; /* This is equivalent to p-6 */
+  border-radius: 0.5rem; /* This is equivalent to rounded-lg */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* This is equivalent to shadow-md */
+}
+
+.hover-bg-gray {
+  transition: background-color 0.3s ease;
+}
+
+.hover-bg-gray:hover {
+  background-color: #4a5568; /* This is equivalent to hover:bg-gray-700 */
 }

@@ -29,28 +29,34 @@ export const fetchContractHistory = async (address) => {
   }
 };
 
-export const fetchMemecoinPrice = async (address) => {
-  try {
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${address}&vs_currencies=usd`
-    );
-    const price = response.data[address.toLowerCase()]?.usd || 0;
-    console.log("Coingecko",response)
-    return price;
-  } catch (error) {
-    console.error("Error fetching memecoin price:", error);
-    return "0.0000";
-  }
-};
-
+export const fetchMemecoinDetails = async (address) => {
+    try {
+      const response = await axios.get(
+        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
+      );
+  
+      // Ensure the response structure is valid and contains market data
+      if (response.data && response.data.market_data && response.data.market_data.current_price) {
+        const { name, symbol, market_data } = response.data;
+        return {
+          name,
+          symbol,
+          price: market_data.current_price.usd ? parseFloat(market_data.current_price.usd) : 0, // Parse to float
+        };
+      } else {
+        throw new Error("Invalid data structure returned from API");
+      }
+    } catch (error) {
+      console.error("Error fetching memecoin details:", error);
+      return { name: "Unknown", symbol: "UNKNOWN", price: 0.0000 };
+    }
+  };
+  
 export const fetchTopHolders = async (address) => {
   try {
     const response = await axios.get(
       `https://api.ethplorer.io/getTopTokenHolders/${address}?apiKey=freekey&limit=3`
-      
     );
-    console.log("ETHHPPLOOo",response)
-
     const holders = response.data.holders.map(holder => ({
       address: holder.address,
       percentage: holder.share,
@@ -65,8 +71,8 @@ export const fetchTopHolders = async (address) => {
 export const calculateRiskScore = (transactions, price, topHolders) => {
   let score = 0;
 
-  if (price < 0.001) {
-    score += 40; // Add 40 points if the price is less than $0.001
+  if (price < 0.0010) {
+    score += 40; // Add 40 points if the price is less than $0.0010
   }
 
   const topHolderTotalPercentage = topHolders.reduce((total, holder) => total + holder.percentage, 0);
