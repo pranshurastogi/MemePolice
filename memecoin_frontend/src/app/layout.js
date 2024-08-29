@@ -1,16 +1,19 @@
-import { WalletProvider } from './context/WalletContext';
-import Header from './components/Header';
-import './globals.css';
+// src/app/layout.js
+"use client"; // This ensures the layout is treated as a client component
+
+import Header from "./components/Header";
+import { WalletProvider } from "./context/WalletContext";
+import "./globals.css"; // Import your global styles
 
 export default function RootLayout({ children }) {
   return (
-    <WalletProvider>
-      <html lang="en">
-        <body>
+    <html lang="en">
+      <body>
+        <WalletProvider>
           <Header />
           <main>{children}</main>
-        </body>
-      </html>
-    </WalletProvider>
+        </WalletProvider>
+      </body>
+    </html>
   );
 }

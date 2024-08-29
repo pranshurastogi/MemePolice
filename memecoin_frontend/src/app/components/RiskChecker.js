@@ -1,6 +1,7 @@
-"use client"; // Mark as a client component
+"use client";
 
 import { useState } from "react";
+import { useWallet } from '../context/WalletContext';
 import {
   fetchContractCode,
   fetchContractHistory,
@@ -19,6 +20,8 @@ const RiskChecker = () => {
   const [status, setStatus] = useState("");
   const [recentSearches, setRecentSearches] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
+
+  const { network } = useWallet();  // Add this line
 
   const handleCheckRisk = async () => {
     setRiskScore(null);
@@ -83,6 +86,7 @@ const RiskChecker = () => {
     <div className="flex">
       <div className="container flex-1">
         <h1 className="text-4xl mb-4">Meme Police 🚓</h1>
+        {network && <p>Current Network: {network}</p>} {/* Add this line */}
         <input
           type="text"
           value={address}
