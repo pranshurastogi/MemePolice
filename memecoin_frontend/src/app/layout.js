@@ -1,14 +1,16 @@
-import Header from "./components/Header";
+import { WalletProvider } from './context/WalletContext';
+import Header from './components/Header';
+import './globals.css';
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <Header />
-        <div className="container mx-auto p-4">
-          {children}
-        </div>
-      </body>
-    </html>
+    <WalletProvider>
+      <html lang="en">
+        <body>
+          <Header />
+          <main>{children}</main>
+        </body>
+      </html>
+    </WalletProvider>
   );
 }

@@ -36,27 +36,27 @@ p {
 .left-content {
   flex: 1;
   padding: 20px;
-  border: 1px solid white;
+  border: 1px solid greenyellow;
 }
 
 .right-content {
   flex: 1;
   padding: 20px;
-  border: 1px solid white;
+  border: 1px solid greenyellow;
 }
 
 .container {
   padding: 20px;
-  border: 1px solid white;
+  border: 1px solid greenyellow;
 }
 
 .card {
   padding: 10px;
-  border: 1px solid white;
+  border: 1px solid greenyellow;
   margin-bottom: 10px;
 }
 
 .card-header {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid greenyellow;
   margin-bottom: 10px;
 }
