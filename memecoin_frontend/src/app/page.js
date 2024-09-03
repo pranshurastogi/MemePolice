@@ -1,4 +1,5 @@
 import RiskChecker from "./components/RiskChecker";
+import AttestationForm from "./components/AttestationForm"; // Import the AttestationForm component
 
 export default function Home() {
   return (
@@ -7,7 +8,8 @@ export default function Home() {
         <RiskChecker />
       </div>
       <div className="right-content">
-        {/* Your recent searches or other content will go here */}
+        {/* AttestationForm will be rendered here */}
+        <AttestationForm />
       </div>
     </main>
   );

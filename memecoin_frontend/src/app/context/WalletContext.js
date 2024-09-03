@@ -70,14 +70,43 @@ export const WalletProvider = ({ children }) => {
         return "Goerli Testnet";
       case "42":
         return "Kovan Testnet";
+      case "11155111":
+        return "Sepolia Testnet";
       case "137":
         return "Polygon Mainnet";
       case "80001":
         return "Mumbai Testnet";
+      case "10":
+        return "Optimism Mainnet";
+      case "69":
+        return "Optimism Kovan";
+      case "420":
+        return "Optimism Goerli";
+      case "42161":
+        return "Arbitrum One Mainnet";
+      case "421611":
+        return "Arbitrum Rinkeby Testnet";
+      case "421613":
+        return "Arbitrum Goerli Testnet";
+      case "56":
+        return "Binance Smart Chain Mainnet";
+      case "97":
+        return "Binance Smart Chain Testnet";
+      case "100":
+        return "Gnosis Chain (formerly xDai)";
+      case "43114":
+        return "Avalanche C-Chain Mainnet";
+      case "43113":
+        return "Avalanche Fuji Testnet";
+      case "250":
+        return "Fantom Opera Mainnet";
+      case "4002":
+        return "Fantom Testnet";
       default:
         return "Unknown";
     }
   };
+  
 
   return (
     <WalletContext.Provider value={{ currentAccount, isConnected, network, connectWallet, disconnectWallet }}>

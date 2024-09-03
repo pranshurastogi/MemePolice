@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet } from '../context/WalletContext';
 import {
   fetchContractCode,
   fetchContractHistory,
   fetchMemecoinDetails,
   fetchTopHolders,
+  fetchContractCreationBlock,
+  fetchNumberOfHolders,
   calculateRiskScore,
 } from "../services/ethereum";
 import { ClipLoader } from "react-spinners";
@@ -21,7 +23,22 @@ const RiskChecker = () => {
   const [recentSearches, setRecentSearches] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
-  const { network } = useWallet();  // Add this line
+  const { network } = useWallet();
+
+  // Load recent searches from localStorage when the component mounts
+  useEffect(() => {
+    const storedSearches = localStorage.getItem('recentSearches');
+    if (storedSearches) {
+      setRecentSearches(JSON.parse(storedSearches));
+    }
+  }, []);
+
+  // Save recent searches to localStorage whenever it updates
+  useEffect(() => {
+    if (recentSearches.length > 0) {
+      localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+    }
+  }, [recentSearches]);
 
   const handleCheckRisk = async () => {
     setRiskScore(null);
@@ -35,42 +52,67 @@ const RiskChecker = () => {
     setIsLoading(true);
     setStatus("Validating address...");
 
-    const code = await fetchContractCode(address);
-    if (code === "0x") {
-      alert("This address does not contain a contract.");
+    try {
+      const code = await fetchContractCode(address);
+      
+      if (code === "0x") {
+        alert("This address does not contain a contract.");
+        setIsLoading(false);
+        setStatus("");
+        return;
+      }
+
+      setStatus("Fetching contract history...");
+      const transactions = await fetchContractHistory(address);
+
+      setStatus("Fetching memecoin details...");
+      const details = await fetchMemecoinDetails(address);
+
+      setStatus("Fetching top holders...");
+      const topHolders = await fetchTopHolders(address);
+
+      setStatus("Fetching contract creation block...");
+      const creationBlock = await fetchContractCreationBlock(address);
+
+      setStatus("Fetching number of holders...");
+      const numberOfHolders = await fetchNumberOfHolders(address);
+
+      setStatus("Calculating risk score...");
+      const score = calculateRiskScore(
+        transactions,
+        details.price,
+        topHolders,
+        details.marketCap,
+        details.volume,
+        numberOfHolders
+      );
+
+      const memecoinData = {
+        ...details,
+        topHolders,
+        creationBlock,
+        numberOfHolders // Ensure this is included in the details
+      };
+
+      setMemecoinDetails(memecoinData);
+      setRiskScore(score);
       setIsLoading(false);
-      setStatus("");
-      return;
+      setStatus("Done");
+
+      const newSearch = {
+        address,
+        details: memecoinData,
+        score,
+        status: score >= 75 ? "High Risk 🔴" : score >= 50 ? "Medium Risk 🟡" : "Low Risk 🟢",
+      };
+
+      // Update recent searches and save to localStorage
+      setRecentSearches([newSearch, ...recentSearches.slice(0, 4)]);
+    } catch (error) {
+      console.error("Error during risk assessment:", error);
+      setStatus("Error occurred during risk assessment.");
+      setIsLoading(false);
     }
-
-    setStatus("Fetching contract history...");
-    const transactions = await fetchContractHistory(address);
-
-    setStatus("Fetching memecoin details...");
-    const details = await fetchMemecoinDetails(address);
-    const topHolders = await fetchTopHolders(address);
-
-    setStatus("Calculating risk score...");
-    const score = calculateRiskScore(transactions, details.price, topHolders);
-
-    const memecoinData = {
-      ...details,
-      topHolders,
-    };
-
-    setMemecoinDetails(memecoinData);
-    setRiskScore(score);
-    setIsLoading(false);
-    setStatus("Done");
-
-    // Add to recent searches
-    const newSearch = {
-      address,
-      details: memecoinData,
-      score,
-      status: score >= 75 ? "High Risk 🔴" : score >= 50 ? "Medium Risk 🟡" : "Low Risk 🟢",
-    };
-    setRecentSearches([newSearch, ...recentSearches.slice(0, 4)]);
   };
 
   const handleCopyData = (data) => {
@@ -82,11 +124,16 @@ const RiskChecker = () => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
+  const handleClearHistory = () => {
+    localStorage.removeItem('recentSearches');
+    setRecentSearches([]);
+  };
+
   return (
     <div className="flex">
       <div className="container flex-1">
         <h1 className="text-4xl mb-4">Meme Police 🚓</h1>
-        {network && <p>Current Network: {network}</p>} {/* Add this line */}
+        {network && <p>Current Network: {network}</p>}
         <input
           type="text"
           value={address}
@@ -102,19 +149,21 @@ const RiskChecker = () => {
           {isLoading ? (
             <>
               <ClipLoader color="#fff" size={20} />
-              <span className="ml-2"> ✅Checking...</span>
+              <span className="ml-2"> ✅ Checking...</span>
             </>
           ) : (
             "Guilty or Not"
           )}
         </button>
-        {status && (
-          <p className="mt-4">{status}</p>
-        )}
+        {status && <p className="mt-4">{status}</p>}
         {riskScore !== null && memecoinDetails && (
           <div className="card mt-4">
             <h2 className="text-xl">{memecoinDetails.name} ({memecoinDetails.symbol})</h2>
             <p>Price: ${memecoinDetails.price?.toFixed(4)}</p>
+            <p>Market Cap: ${memecoinDetails.marketCap?.toLocaleString()}</p>
+            <p>Volume: ${memecoinDetails.volume?.toLocaleString()}</p>
+            <p>Number of Holders: {memecoinDetails.numberOfHolders || 'N/A'}</p>
+            <p>Contract Creation Block: {memecoinDetails.creationBlock}</p>
             <p className={`text-lg ${riskScore >= 75 ? 'text-red-500' : riskScore >= 50 ? 'text-yellow-500' : 'text-green-500'}`}>
               Risk Score: {riskScore} - {riskScore >= 75 ? "High Risk" : riskScore >= 50 ? "Medium Risk" : "Low Risk"}
             </p>
@@ -139,8 +188,14 @@ const RiskChecker = () => {
           </div>
         )}
       </div>
-      <div className="right-content w-1/3 ml-5">
+      <div className="right-content w-1/3 ml-5 overflow-y-auto" style={{ maxHeight: '80vh' }}>
         <h2 className="text-2xl font-semibold mb-4">Recent Searches</h2>
+        <button 
+          onClick={handleClearHistory}
+          className="mb-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+        >
+          Clear History
+        </button>
         <div className="space-y-4">
           {recentSearches.map((search, index) => (
             <div
@@ -159,6 +214,8 @@ const RiskChecker = () => {
                     {search.details.name} ({search.details.symbol})
                   </a>
                   <p className="text-sm text-green-400">Price: ${search.details.price?.toFixed(4) || "N/A"}</p>
+                  <p className="text-sm">Market Cap: ${search.details.marketCap?.toLocaleString()}</p>
+                  <p className="text-sm">Volume: ${search.details.volume?.toLocaleString()}</p>
                 </div>
                 <span className={`text-lg ${search.score >= 75 ? 'text-red-500' : search.score >= 50 ? 'text-yellow-500' : 'text-green-500'}`}>
                   {search.status}
