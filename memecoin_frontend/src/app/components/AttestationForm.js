@@ -1,105 +1,106 @@
-"use client"; // Add this line at the top
-
-import { useState } from 'react';
-import { ethers } from 'ethers';
-import { SignProtocolClient, SpMode, EvmChains } from '@ethsign/sp-sdk';
-import { privateKeyToAccount } from 'viem/accounts';
+"use client";
+import React, { useState } from 'react';
+import { getSchemaDetails } from '../services/attestationService';
 
 export default function AttestationForm() {
-  const [contractAddress, setContractAddress] = useState('');
-  const [reputationScore, setReputationScore] = useState('');
-  const [positiveAttestations, setPositiveAttestations] = useState('');
-  const [negativeAttestations, setNegativeAttestations] = useState('');
-  const [attestationHistory, setAttestationHistory] = useState('');
-  const [transactionHash, setTransactionHash] = useState(null);
+  const [schemaDetails, setSchemaDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Fetch your environment variables
-    const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY;
-    const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL;
-
-    // Initialize provider, wallet, and client
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    const account = privateKeyToAccount(privateKey);
-    const client = new SignProtocolClient(SpMode.OnChain, {
-      chain: EvmChains.baseSepolia,
-      account: account,
-    });
-
-    try {
-      const attestation = await client.createAttestation({
-        schemaId: "your-schema-id", // Replace with your actual schema ID
-        data: {
-          contractAddress,
-          reputationScore: parseInt(reputationScore),
-          numberOfPositiveAttestations: parseInt(positiveAttestations),
-          numberOfNegativeAttestations: parseInt(negativeAttestations),
-          attestationHistory: attestationHistory.split(','),
-        },
-        indexingValue: contractAddress.toLowerCase(),
-      });
-
-      setTransactionHash(attestation.txHash);
-      alert("Attestation created successfully!");
-    } catch (error) {
-      console.error("Error creating attestation:", error);
-      alert("Failed to create attestation.");
+  const handleViewSchema = async () => {
+    if (!isExpanded) {
+      setLoading(true);
+      try {
+        const details = await getSchemaDetails();
+        setSchemaDetails(details);
+        setIsExpanded(true);
+      } catch (error) {
+        console.error("Error fetching schema:", error);
+        alert("Error fetching schema: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setIsExpanded(false); // Collapse the details if already expanded
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Contract Address:</label>
-        <input
-          type="text"
-          value={contractAddress}
-          onChange={(e) => setContractAddress(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Reputation Score:</label>
-        <input
-          type="number"
-          value={reputationScore}
-          onChange={(e) => setReputationScore(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Positive Attestations:</label>
-        <input
-          type="number"
-          value={positiveAttestations}
-          onChange={(e) => setPositiveAttestations(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Negative Attestations:</label>
-        <input
-          type="number"
-          value={negativeAttestations}
-          onChange={(e) => setNegativeAttestations(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Attestation History (comma separated):</label>
-        <input
-          type="text"
-          value={attestationHistory}
-          onChange={(e) => setAttestationHistory(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit">Create Attestation</button>
-      {transactionHash && (
-        <p>Transaction Hash: {transactionHash}</p>
+    <div style={{
+      backgroundColor: '#f9f9f9',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+      marginBottom: '20px'
+    }}>
+      <button
+        onClick={handleViewSchema}
+        style={{
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          padding: '10px 20px',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '16px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {isExpanded ? 'Hide Schema' : 'View Schema'}
+      </button>
+      {loading && <p>Loading...</p>}
+      {isExpanded && schemaDetails && (
+        <div style={{
+          marginTop: '20px',
+          padding: '20px',
+          backgroundColor: '#fff',
+          borderRadius: '10px',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        }}>
+          <h3 style={{
+            color: '#333',
+            backgroundColor: '#e8f5e9',
+            padding: '10px',
+            borderRadius: '50px',
+            borderLeft: '10px solid #4CAF50',
+            boxShadow: '0 20px 5px rgba(0,0,0,0.1)',
+            fontSize: '18px',
+            fontFamily: 'Arial, sans-serif',
+            textAlign: 'center',
+            marginBottom: '20px'
+          }}>
+            Schema Details
+          </h3>
+          <div style={{ paddingLeft: '20px' }}>
+            {Object.entries(schemaDetails).map(([key, value], index) => (
+              <div key={index} style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '10px',
+                position: 'relative'
+              }}>
+                <span style={{
+                  position: 'absolute',
+                  left: '-15px',
+                  width: '10px',
+                  height: '10px',
+                  backgroundColor: index % 2 === 0 ? '#4CAF50' : '#FFA500',
+                  borderRadius: '50%'
+                }}></span>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  paddingLeft: '20px'
+                }}>
+                  <span style={{ fontWeight: 'bold', color: '#333' }}>{key}:</span>
+                  <span style={{ color: '#555' }}>{JSON.stringify(value, null, 2)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
-    </form>
+    </div>
   );
 }
