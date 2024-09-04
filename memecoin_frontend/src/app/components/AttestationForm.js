@@ -1,11 +1,14 @@
 "use client";
 import React, { useState } from 'react';
-import { getSchemaDetails } from '../services/attestationService';
+import { getSchemaDetails, createAttestation } from '../services/attestationService';
 
 export default function AttestationForm() {
   const [schemaDetails, setSchemaDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [counter, setCounter] = useState('');
+  const [decrease, setDecrease] = useState('');
+  const [attestationMessage, setAttestationMessage] = useState('');
 
   const handleViewSchema = async () => {
     if (!isExpanded) {
@@ -21,7 +24,28 @@ export default function AttestationForm() {
         setLoading(false);
       }
     } else {
-      setIsExpanded(false); // Collapse the details if already expanded
+      setIsExpanded(false);
+    }
+  };
+
+  const handleRegisterAttestation = async () => {
+    setLoading(true);
+    setAttestationMessage('');
+    try {
+      const attestationData = {
+        counter,
+        decrease,
+      };
+
+      console.log("Registering attestation with data:", attestationData);
+      const result = await createAttestation(attestationData);
+      console.log("Attestation registered successfully:", result);
+      setAttestationMessage("Attestation registered successfully!");
+    } catch (error) {
+      console.error("Error registering attestation:", error);
+      setAttestationMessage("Failed to register attestation: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,6 +125,74 @@ export default function AttestationForm() {
           </div>
         </div>
       )}
+
+      {/* Attestation Section */}
+      <div style={{ marginTop: '20px' }}>
+        <h3 style={{
+          color: '#333',
+          backgroundColor: '#e8f5e9',
+          padding: '10px',
+          borderRadius: '50px',
+          borderLeft: '10px solid #4CAF50',
+          boxShadow: '0 20px 5px rgba(0,0,0,0.1)',
+          fontSize: '18px',
+          fontFamily: 'Arial, sans-serif',
+          textAlign: 'center',
+          marginBottom: '20px'
+        }}>
+          Register Attestation
+        </h3>
+        <input
+          type="number"
+          placeholder="Counter"
+          value={counter}
+          onChange={(e) => setCounter(e.target.value)}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        />
+        <input
+          type="number"
+          placeholder="Decrease"
+          value={decrease}
+          onChange={(e) => setDecrease(e.target.value)}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        />
+        <button
+          onClick={handleRegisterAttestation}
+          style={{
+            backgroundColor: '#FF5733',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            transition: 'all 0.3s ease',
+            marginTop: '10px'
+          }}
+        >
+          Register
+        </button>
+        {attestationMessage && (
+          <p style={{ marginTop: '10px', color: attestationMessage.includes('successfully') ? 'green' : 'red' }}>
+            {attestationMessage}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

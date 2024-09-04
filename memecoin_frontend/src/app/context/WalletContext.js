@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { ethers } from "ethers";  // <-- Import ethers
 
 const WalletContext = createContext();
 
@@ -13,12 +14,23 @@ export const WalletProvider = ({ children }) => {
   const connectWallet = async () => {
     if (typeof window !== 'undefined' && window.ethereum) {
       try {
+        // Trigger MetaMask to pop up
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         if (accounts.length === 0) {
           throw new Error("No accounts found.");
         }
+
+        // Sign a message to confirm connection
+        const message = "Signing in to Memecoin Police";
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const signature = await signer.signMessage(message);
+
+        console.log("Signature:", signature);  // You can store this if needed
+
         setCurrentAccount(accounts[0]);
         setIsConnected(true);
+
         const netVersion = await window.ethereum.request({ method: 'net_version' });
         setNetwork(getNetworkName(netVersion));
       } catch (error) {
@@ -32,7 +44,19 @@ export const WalletProvider = ({ children }) => {
 
   // Automatically connect and set up listeners when the component mounts
   useEffect(() => {
-    connectWallet().catch(console.error);
+    const initializeWallet = async () => {
+      if (typeof window !== 'undefined' && window.ethereum) {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          setCurrentAccount(accounts[0]);
+          setIsConnected(true);
+          const netVersion = await window.ethereum.request({ method: 'net_version' });
+          setNetwork(getNetworkName(netVersion));
+        }
+      }
+    };
+
+    initializeWallet().catch(console.error);
 
     const handleAccountsChanged = (accounts) => {
       if (accounts.length > 0) {
