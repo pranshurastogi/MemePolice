@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@ethsign/sp-sdk": "^0.7.2",
+    "@web3-onboard/core": "^2.22.2",
+    "@web3-onboard/injected-wallets": "^2.11.2",
+    "@web3-onboard/walletconnect": "^2.6.1",
     "axios": "^1.7.5",
     "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
