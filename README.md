@@ -20,6 +20,13 @@
 
 With the rise of memecoins in the cryptocurrency market, investors face an increasing need for tools to assess the associated risks. **MemePolice** analyzes memecoin data on the Ethereum blockchain and computes a detailed risk score. This score helps users make informed decisions about whether to invest in or trade a specific token.
 
+## Why Memecoin Police is Important:
+1. High Volatility and Risks in Memecoins: The memecoin market is known for its extreme volatility. While some memecoins have gained immense popularity and value (e.g., Dogecoin, Shiba Inu), many others are highly speculative, with little utility or backing. Investors are often drawn into these projects due to social media hype without fully understanding the risks. Memecoin Police provides a way to mitigate these risks by giving users a full breakdown of each token's potential vulnerabilities.
+
+2. Rise in Fraud and Scams: The anonymity of blockchain technology has given rise to countless scams and rug-pulls, particularly in the memecoin market. Unscrupulous developers launch tokens with the intent to defraud investors by quickly selling off large portions of the supply or manipulating token prices. Memecoin Police addresses this by identifying high-risk tokens before users invest.
+
+3. Vitalik Buterin's Vision: The project is inspired by Vitalik Buterin's concept of using memecoins for charitable or positive-sum causes. He proposed that rather than creating worthless or harmful memecoins, the crypto community could develop coins that provide real value, such as charity coins or fun, engaging games that leave communities better off. Memecoin Police aligns with this vision by promoting transparency and ensuring that users engage with memecoins that have safer and more meaningful purposes.
+
 ## Features
 
 1. **Comprehensive Risk Scoring**: Calculates a detailed risk score based on multiple factors, such as price volatility, market cap, trading volume, holder concentration, transaction volume, and contract age.
