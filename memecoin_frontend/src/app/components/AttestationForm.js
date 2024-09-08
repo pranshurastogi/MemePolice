@@ -1,14 +1,26 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getSchemaDetails, createAttestation } from '../services/attestationService';
+import { useWallet } from '../context/WalletContext';
 
 export default function AttestationForm() {
   const [schemaDetails, setSchemaDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [counter, setCounter] = useState('');
-  const [decrease, setDecrease] = useState('');
+  const [xProfile, setXProfile] = useState('');
+  const [positiveScore, setPositiveScore] = useState('');
+  const [negativeScore, setNegativeScore] = useState('');
+  const [sentimentScore, setSentimentScore] = useState('');
+  const [review, setReview] = useState('');
+  const [tokenOwner, setTokenOwner] = useState(false);
   const [attestationMessage, setAttestationMessage] = useState('');
+  const { currentAccount } = useWallet();
+
+  useEffect(() => {
+    if (currentAccount) {
+      console.log("Connected wallet address:", currentAccount);
+    }
+  }, [currentAccount]);
 
   const handleViewSchema = async () => {
     if (!isExpanded) {
@@ -33,8 +45,13 @@ export default function AttestationForm() {
     setAttestationMessage('');
     try {
       const attestationData = {
-        counter,
-        decrease,
+        AddressAttestator: currentAccount,
+        XProfile: xProfile,
+        PositveScore: parseInt(positiveScore, 10),
+        "Negative score": parseInt(negativeScore, 10),
+        SentimentScore: parseInt(sentimentScore, 10),
+        Review: review,
+        TokenOwner: tokenOwner,
       };
 
       console.log("Registering attestation with data:", attestationData);
@@ -142,11 +159,29 @@ export default function AttestationForm() {
         }}>
           Register Attestation
         </h3>
+
+        {/* Non-editable field for AddressAttestator */}
         <input
-          type="number"
-          placeholder="Counter"
-          value={counter}
-          onChange={(e) => setCounter(e.target.value)}
+          type="text"
+          value={currentAccount || ''}
+          disabled
+          placeholder="Address Attestator"
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '100%',
+            boxSizing: 'border-box',
+            backgroundColor: '#e0e0e0',
+            color: '#333'
+          }}
+        />
+        <input
+          type="text"
+          placeholder="XProfile"
+          value={xProfile}
+          onChange={(e) => setXProfile(e.target.value)}
           style={{
             padding: '10px',
             marginBottom: '10px',
@@ -158,9 +193,9 @@ export default function AttestationForm() {
         />
         <input
           type="number"
-          placeholder="Decrease"
-          value={decrease}
-          onChange={(e) => setDecrease(e.target.value)}
+          placeholder="Positive Score"
+          value={positiveScore}
+          onChange={(e) => setPositiveScore(e.target.value)}
           style={{
             padding: '10px',
             marginBottom: '10px',
@@ -170,6 +205,55 @@ export default function AttestationForm() {
             boxSizing: 'border-box'
           }}
         />
+        <input
+          type="number"
+          placeholder="Negative Score"
+          value={negativeScore}
+          onChange={(e) => setNegativeScore(e.target.value)}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        />
+        <input
+          type="number"
+          placeholder="Sentiment Score"
+          value={sentimentScore}
+          onChange={(e) => setSentimentScore(e.target.value)}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Review"
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={tokenOwner}
+            onChange={(e) => setTokenOwner(e.target.checked)}
+          /> Token Owner
+        </label>
         <button
           onClick={handleRegisterAttestation}
           style={{
@@ -185,7 +269,7 @@ export default function AttestationForm() {
             marginTop: '10px'
           }}
         >
-          Register
+          Register Attestation
         </button>
         {attestationMessage && (
           <p style={{ marginTop: '10px', color: attestationMessage.includes('successfully') ? 'green' : 'red' }}>

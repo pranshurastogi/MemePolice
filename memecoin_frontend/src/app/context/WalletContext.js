@@ -53,7 +53,7 @@ const onboard = Onboard({
 export default onboard;
 
 const WalletContext = createContext();
-export { onboard }; // Add this line to export onboard
+export { onboard }; 
 
 export const WalletProvider = ({ children }) => {
   const [currentAccount, setCurrentAccount] = useState(null);

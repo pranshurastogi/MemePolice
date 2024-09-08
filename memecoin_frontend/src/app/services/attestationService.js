@@ -2,7 +2,7 @@ import { SignProtocolClient, SpMode, EvmChains } from '@ethsign/sp-sdk';
 import { ethers } from 'ethers';
 import { onboard } from '../context/WalletContext'; // Ensure Web3-Onboard is initialized
 
-const schemaId = "0xa6"; // Schema ID
+const schemaId = "0x1e3"; // Schema ID
 const sepoliaRpcUrl = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL;
 
 // Function to connect the wallet using Web3-Onboard and return provider, signer, and account details
