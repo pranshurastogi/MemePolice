@@ -25,7 +25,7 @@ With the rise of memecoins in the cryptocurrency market, investors face an incre
 
 2. Rise in Fraud and Scams: The anonymity of blockchain technology has given rise to countless scams and rug-pulls, particularly in the memecoin market. Unscrupulous developers launch tokens with the intent to defraud investors by quickly selling off large portions of the supply or manipulating token prices. Memecoin Police addresses this by identifying high-risk tokens before users invest.
 
-3. Vitalik Buterin's Vision: The project is inspired by Vitalik Buterin's concept of using memecoins for charitable or positive-sum causes. He proposed that rather than creating worthless or harmful memecoins, the crypto community could develop coins that provide real value, such as charity coins or fun, engaging games that leave communities better off. Memecoin Police aligns with this vision by promoting transparency and ensuring that users engage with memecoins that have safer and more meaningful purposes.
+3. Vitalik Buterin's Vision: The project is inspired by Vitalik Buterin's concept of using memecoins for charitable or positive-sum causes. He proposed that rather than creating worthless or harmful memecoins, the crypto community could develop coins that provide real value, such as charity coins or fun, engaging games that leave communities better off. Memecoin Police aligns with this vision by promoting transparency and ensuring that users engage with memecoins that have safer and more meaningful purposes. [Link](https://vitalik.eth.limo/general/2024/03/29/memecoins.html)
 
 ## Features
 
