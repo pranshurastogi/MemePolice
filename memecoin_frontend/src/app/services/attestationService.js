@@ -63,7 +63,7 @@ export const getSchemaDetails = async () => {
 };
 
 // Function to create an attestation
-export const createAttestation = async ({ counter, decrease }) => {
+export const createAttestation = async ({ AddressAttestator, XProfile, PositiveScore, NegativeScore, SentimentScore, Review, TokenOwner }) => {
   try {
     const { signer, account } = await connectWallet();
     if (!signer) throw new Error("Failed to initialize signer.");
@@ -75,18 +75,24 @@ export const createAttestation = async ({ counter, decrease }) => {
       account: signer,
     });
 
+    // Prepare the attestation data according to the schema
     const attestationData = {
       schemaId,
       data: {
-        counter: parseInt(counter, 10),
-        decrease: parseInt(decrease, 10),
+        AddressAttestator,             // string
+        XProfile,                      // string
+        PositiveScore: parseInt(PositiveScore, 10),  // uint256
+        NegativeScore: parseInt(NegativeScore, 10),  // uint256
+        SentimentScore: parseInt(SentimentScore, 10),  // uint256
+        Review,                        // string
+        TokenOwner                     // bool
       },
       indexingValue: account.toLowerCase(),
     };
 
     console.log("Prepared data for transaction:", JSON.stringify(attestationData));
 
-    // Initiate MetaMask signing
+    // Initiate MetaMask signing and create attestation
     const result = await client.createAttestation(attestationData, {
       from: account,
     });
