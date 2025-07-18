@@ -1,6 +1,8 @@
 # MemePolice
 <img width="1440" alt="Screenshot 2024-09-08 at 3 38 32 PM" src="https://github.com/user-attachments/assets/ba049de2-0070-4a64-b19d-6116fe2cce0a">
 
+[ETHGlobal Winning.pdf](https://github.com/user-attachments/files/21315983/certificate.pdf)
+
 # MemePolice: Memecoin Risk Analyzer
 
 **MemePolice** is a decentralized application (dApp) designed to analyze the risk associated with memecoins. It leverages data from the Ethereum blockchain and performs advanced calculations to provide a detailed risk score based on various metrics such as price, market cap, volume, transaction activity, and holder concentration.
